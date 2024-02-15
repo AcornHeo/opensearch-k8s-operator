@@ -15,7 +15,7 @@ type ISMPolicy struct {
 	Description       string             `json:"description"`
 	ErrorNotification *ErrorNotification `json:"error_notification,omitempty"`
 	// Specify an ISM template pattern that matches the index to apply the policy.
-	ISMTemplate *ISMTemplate `json:"ism_template,omitempty"`
+	ISMTemplate []ISMTemplate `json:"ism_template,omitempty"`
 	// The time the policy was last updated.
 	// The states that you define in the policy.
 	States []State `json:"states"`
@@ -119,13 +119,13 @@ type AliasDetails struct {
 
 type Allocation struct {
 	// Allocate the index to a node with a specified attribute.
-	Exclude string `json:"exclude"`
+	Exclude map[string]interface{} `json:"exclude"`
 	// Allocate the index to a node with any of the specified attributes.
-	Include string `json:"include"`
+	Include map[string]interface{} `json:"include"`
 	// Don’t allocate the index to a node with any of the specified attributes.
-	Require string `json:"require"`
+	Require map[string]interface{} `json:"require"`
 	// Wait for the policy to execute before allocating the index to a node with a specified attribute.
-	WaitFor string `json:"wait_for"`
+	WaitFor interface{} `json:"wait_for"`
 }
 
 type Close struct{}

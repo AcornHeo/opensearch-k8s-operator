@@ -2,6 +2,7 @@ package reconcilers
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"time"
@@ -289,10 +290,11 @@ func (r *IsmPolicyReconciler) CreateISMPolicyRequest() (*requests.Policy, error)
 		}
 	}
 
-	if r.instance.Spec.ISMTemplate != nil {
-		policy.ISMTemplate = &requests.ISMTemplate{}
-		policy.ISMTemplate.IndexPatterns = r.instance.Spec.ISMTemplate.IndexPatterns
-		policy.ISMTemplate.Priority = r.instance.Spec.ISMTemplate.Priority
+	if len(r.instance.Spec.ISMTemplate) > 0 {
+		policy.ISMTemplate = make([]requests.ISMTemplate, 0, len(r.instance.Spec.ISMTemplate))
+		for _, ismTemplate := range r.instance.Spec.ISMTemplate {
+			policy.ISMTemplate = append(policy.ISMTemplate, requests.ISMTemplate{IndexPatterns: ismTemplate.IndexPatterns, Priority: ismTemplate.Priority})
+		}
 	}
 
 	if len(r.instance.Spec.States) > 0 {
@@ -417,10 +419,29 @@ func (r *IsmPolicyReconciler) CreateISMPolicyRequest() (*requests.Policy, error)
 				}
 				var alloc *requests.Allocation
 				if action.Allocation != nil {
+					excludeMap := make(map[string]interface{})
+					if err := json.Unmarshal([]byte(action.Allocation.Exclude), &excludeMap); err != nil {
+						reason := "failed to parsed allocation exclude config."
+						r.recorder.Event(r.instance, "Error", opensearchError, reason)
+						return nil, nil
+					}
+
+					includeMap := make(map[string]interface{})
+					if err := json.Unmarshal([]byte(action.Allocation.Include), &includeMap); err != nil {
+						reason := "failed to parsed allocation include config."
+						r.recorder.Event(r.instance, "Error", opensearchError, reason)
+						return nil, nil
+					}
+					requireMap := make(map[string]interface{})
+					if err := json.Unmarshal([]byte(action.Allocation.Require), &requireMap); err != nil {
+						reason := "failed to parsed allocation require config."
+						r.recorder.Event(r.instance, "Error", opensearchError, reason)
+						return nil, nil
+					}
 					alloc = &requests.Allocation{
-						Exclude: action.Allocation.Exclude,
-						Include: action.Allocation.Include,
-						Require: action.Allocation.Require,
+						Exclude: excludeMap,
+						Include: includeMap,
+						Require: requireMap,
 						WaitFor: action.Allocation.WaitFor,
 					}
 				}
