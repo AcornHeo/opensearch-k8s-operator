@@ -527,7 +527,8 @@ func (r *IsmPolicyReconciler) CreateISMPolicyRequest() (*requests.Policy, error)
 		}
 	}
 	ismPolicy := requests.Policy{
-		Policy: policy,
+		Policy:   policy,
+		PolicyID: r.instance.Spec.PolicyID,
 	}
 	return &ismPolicy, nil
 }

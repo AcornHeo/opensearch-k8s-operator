@@ -125,7 +125,7 @@ type Allocation struct {
 	// Don’t allocate the index to a node with any of the specified attributes.
 	Require map[string]interface{} `json:"require"`
 	// Wait for the policy to execute before allocating the index to a node with a specified attribute.
-	WaitFor interface{} `json:"wait_for"`
+	WaitFor *bool `json:"wait_for"`
 }
 
 type Close struct{}

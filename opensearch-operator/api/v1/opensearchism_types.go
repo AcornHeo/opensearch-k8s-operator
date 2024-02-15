@@ -156,7 +156,7 @@ type Allocation struct {
 	// Don’t allocate the index to a node with any of the specified attributes.
 	Require string `json:"require"`
 	// Wait for the policy to execute before allocating the index to a node with a specified attribute.
-	WaitFor string `json:"waitFor"`
+	WaitFor *bool `json:"waitFor"`
 }
 
 type Close struct{}

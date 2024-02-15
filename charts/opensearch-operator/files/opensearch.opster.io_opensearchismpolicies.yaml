@@ -191,7 +191,7 @@ spec:
                                 description: Wait for the policy to execute before
                                   allocating the index to a node with a specified
                                   attribute.
-                                type: string
+                                type: boolean
                             required:
                             - exclude
                             - include
